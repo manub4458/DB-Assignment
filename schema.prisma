@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model ProductCategory {
+  id         Int       @id @default(autoincrement())
+  name       String    @db.VarChar(50)
+  desc       String    @db.Text
+  Product    Product[]
+  createdAt  DateTime  @default(now()) @db.Timestamp()
+  modifiedAt DateTime  @updatedAt @db.Timestamp()
+  deletedAt  DateTime? @db.Timestamp()
+}
+
+model ProductInventory {
+  id         Int       @id @default(autoincrement())
+  quantity   Int
+  product    Product[]
+  createdAt  DateTime  @default(now()) @db.Timestamp()
+  modifiedAt DateTime  @updatedAt @db.Timestamp()
+  deletedAt  DateTime? @db.Timestamp()
+}
+
+model Discount {
+  id                 Int       @id @default(autoincrement())
+  name               String    @db.VarChar(50)
+  desc               String    @db.Text
+  discountPercentage Decimal
+  active             Boolean
+  product            Product[]
+  createdAt          DateTime  @default(now()) @db.Timestamp()
+  modifiedAt         DateTime  @updatedAt @db.Timestamp()
+  deletedAt          DateTime? @db.Timestamp()
+}
+
+model Product {
+  id          Int              @id @default(autoincrement())
+  name        String           @db.VarChar(50)
+  desc        String           @db.Text
+  SKU         String           @db.VarChar(50)
+  categoryId  Int
+  category    ProductCategory  @relation(fields: [categoryId], references: [id])
+  inventoryId Int
+  inventory   ProductInventory @relation(fields: [inventoryId], references: [id])
+  price       Decimal
+  discountId  Int
+  discount    Discount         @relation(fields: [discountId], references: [id])
+  createdAt   DateTime         @default(now()) @db.Timestamp()
+  modifiedAt  DateTime         @updatedAt @db.Timestamp()
+  deletedAt   DateTime?        @db.Timestamp()
+}
